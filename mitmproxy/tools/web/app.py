@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import asyncio
+import socket
 import hashlib
 import json
 import logging
@@ -627,6 +628,20 @@ class SaveOptions(RequestHandler):
 
 class DnsRebind(RequestHandler):
     def get(self):
+        # Get the server's IP address
+        hostname = socket.gethostname()
+        server_ip = socket.gethostbyname(hostname)
+        
+        # Construct the redirection URL with the server's IP address
+        redirection_url = f"http://{server_ip}"  # Replace with the desired path if needed
+        
+        # Perform the redirection
+        self.set_status(302)
+        self.set_header('Location', redirection_url)
+        self.write("")
+        self.finish()
+        return
+        
         raise tornado.web.HTTPError(
             403,
             reason="To protect against DNS rebinding, mitmweb can only be accessed by IP at the moment. "
